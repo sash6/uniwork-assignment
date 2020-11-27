@@ -16,7 +16,10 @@ app.use(bodyParser.json());
 // app.use(express.static(__dirname + '/client/build'))
 
 if(process.env.NODE_ENV === "production") {
-    app.use(express.static(__dirname + '/client/build'))
+    app.use(express.static('client/build'))
+    app.get('*', function (req, res) {
+        res.sendFile(path.resolve(__dirname, ' client', 'build', 'index.html'));
+    });
 }
 
 const webpush = require("web-push");
@@ -36,9 +39,7 @@ app.post('/api/subscribe', (req, res) => {
     res.status(200).json({ success: true });
 });
 console.log(__dirname)
-app.get('/*', function (req, res) {
-    res.sendFile(path.join(__dirname + '/client/build/index.html'));
-});
+
 
 app.post('/api/user/register', formCtrl.registerUser)
 app.post('/api/user/login', formCtrl.authenticateUser)
