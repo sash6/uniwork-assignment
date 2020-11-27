@@ -1,7 +1,8 @@
 require('./db');
 const express = require('express')
 const app = express()
-const port = process.env.PORT || 8000
+const path = require('path');
+const port = process.env.PORT || 3000
 
 var cors = require('cors');
 app.use(cors());
@@ -12,9 +13,10 @@ var formCtrl = require('./controllers/form.controller');
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+// app.use(express.static(__dirname + '/client/build'))
 
 if(process.env.NODE_ENV === "production") {
-    app.use(express.static("client/build"))
+    app.use(express.static(__dirname + '/client/build'))
 }
 
 const webpush = require("web-push");
@@ -32,6 +34,10 @@ app.post('/api/subscribe', (req, res) => {
     webpush.sendNotification(subscription, payload)
         .catch((err) => console.error("err", err));
     res.status(200).json({ success: true });
+});
+console.log(__dirname)
+app.get('/*', function (req, res) {
+    res.sendFile(path.join(__dirname + '/client/build/index.html'));
 });
 
 app.post('/api/user/register', formCtrl.registerUser)
